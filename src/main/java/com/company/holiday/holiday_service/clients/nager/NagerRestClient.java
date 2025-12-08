@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class NagerRestClient implements NagerClient {
 
             try {
                 return action.get();
-            } catch (Exception e) {
+            } catch (RestClientException e) {
 
                 log.warn("Nager API 호출 실패 ({}), 시도 {}/{}: {}", actionName, attempt, RETRY_MAX, e.getMessage());
 
