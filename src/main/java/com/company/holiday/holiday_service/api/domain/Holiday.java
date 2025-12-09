@@ -11,18 +11,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
         name = "holiday",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_holiday_country_date_local_name",
-                        columnNames = {"country_id", "date", "local_name"}
-                )
-        },
         indexes = {
                 @Index(
                         name = "idx_holiday_country_date",
@@ -59,10 +55,10 @@ public class Holiday {
     @Column(name = "launch_year")
     private Integer launchYear;
 
-    @Column(name = "types_raw", length = 200, nullable = false)
+    @Column(name = "types_raw", length = 200)
     private String typesRaw;
 
-    @Column(name = "counties_raw", length = 500)
+    @Column(name = "counties_raw", length = 200)
     private String countiesRaw;
 
     @CreatedDate
@@ -109,4 +105,14 @@ public class Holiday {
                 .countiesRaw(countiesRaw)
                 .build();
     }
+
+    public List<HolidayType> getTypes() {
+        if (typesRaw == null || typesRaw.isEmpty()) {
+            return List.of();
+        }
+        return Arrays.stream(typesRaw.split(","))
+                .map(HolidayType::of)
+                .toList();
+    }
+
 }
