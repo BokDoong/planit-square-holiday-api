@@ -24,10 +24,10 @@ public class HolidaySyncService {
     private final HolidayDomainMapper mapper;
 
     @Transactional
-    public void upsertRecentFiveYearsHolidays(String countryCode, List<HolidayUpsertCommand> commands) {
+    public int upsertRecentFiveYearsHolidays(String countryCode, List<HolidayUpsertCommand> commands) {
         Country country = findCountry(countryCode);
         deleteHolidaysForRecentFiveYears(country);
-        holidayRepository.saveAll(mapper.toHolidays(commands, country));
+        return holidayRepository.saveAll(mapper.toHolidays(commands, country)).size();
     }
 
     private Country findCountry(String countryCode) {

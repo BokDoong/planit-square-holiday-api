@@ -66,6 +66,7 @@ public class HolidayCommandService {
     private int syncHolidaysForCountries(List<CountryUpsertCommand> countryCommands) {
         int total = 0;
         for (CountryUpsertCommand countryCommand : countryCommands) {
+            log.info("[HolidaySync] {} 국가 최근 5년 공휴일 동기화 시작", countryCommand.code());
             int count = syncRecentFiveYearsHolidays(countryCommand);
             total += count;
             log.info("[HolidaySync] 최근 5년 공휴일 동기화 완료 - 국가 코드={}, 공휴일 개수={}", countryCommand.code(), count);
@@ -78,9 +79,7 @@ public class HolidayCommandService {
         for (int year = HolidaySyncRange.START_YEAR; year <= HolidaySyncRange.END_YEAR; year++) {
             holidayCommands.addAll(fetchHolidays(countryCommand.code(), year));
         }
-
-        holidaySyncService.upsertRecentFiveYearsHolidays(countryCommand.code(), deduplicateByDateAndLocalName(holidayCommands));
-        return holidayCommands.size();
+        return holidaySyncService.upsertRecentFiveYearsHolidays(countryCommand.code(), deduplicateByDateAndLocalName(holidayCommands));
     }
 
     private List<CountryUpsertCommand> fetchCountries() {

@@ -95,6 +95,11 @@ class HolidayCommandServiceTest {
         given(mapper.toHolidayCommand(krHolidayDto)).willReturn(krHolidayCmd);
         given(mapper.toHolidayCommand(usHolidayDto)).willReturn(usHolidayCmd);
 
+        given(holidaySyncService.upsertRecentFiveYearsHolidays(eq("KR"), anyList()))
+                .willReturn(5);
+        given(holidaySyncService.upsertRecentFiveYearsHolidays(eq("US"), anyList()))
+                .willReturn(5);
+
         // when
         HolidaySyncResponse response = holidayCommandService.syncCountriesAndHolidays();
 
