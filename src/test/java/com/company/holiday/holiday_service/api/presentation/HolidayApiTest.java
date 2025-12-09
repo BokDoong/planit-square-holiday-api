@@ -1,11 +1,13 @@
 package com.company.holiday.holiday_service.api.presentation;
 
 import com.company.holiday.holiday_service.ApiTestSupport;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshRequest;
+import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayDeleteRequest;
+import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayRefreshRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,7 +27,7 @@ class HolidayApiTest extends ApiTestSupport {
 
     @DisplayName("특정 국가와 연도의 공휴일을 재동기화한다.")
     @Test
-    void refreshHolidays_success() throws Exception {
+    void refreshHolidays() throws Exception {
         // given
         HolidayRefreshRequest request = new HolidayRefreshRequest("KR", 2024);
 
@@ -53,6 +55,22 @@ class HolidayApiTest extends ApiTestSupport {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("특정 국가와 연도의 공휴일을 삭제한다.")
+    @Test
+    void deleteHolidays() throws Exception {
+        // given
+        HolidayDeleteRequest request = new HolidayDeleteRequest("KR", 2024);
+
+        // when // then
+        mockMvc.perform(
+                        delete("/api/v1/holidays")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 }

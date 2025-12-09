@@ -8,6 +8,6 @@ import java.time.LocalDate;
 
 public interface HolidayRepository extends JpaRepository<Holiday, Long> {
 
-    void deleteByCountryAndDateBetween(Country country, LocalDate start, LocalDate end);
+    int deleteByCountryAndDateBetween(Country country, LocalDate start, LocalDate end);
 
 }

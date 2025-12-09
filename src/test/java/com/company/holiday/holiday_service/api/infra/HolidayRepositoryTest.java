@@ -52,9 +52,11 @@ class HolidayRepositoryTest extends IntegrationTestSupport {
         LocalDate start = LocalDate.of(2025, 1, 1);
         LocalDate end = LocalDate.of(2025, 1, 31);
 
-        holidayRepository.deleteByCountryAndDateBetween(kr, start, end);
+        int deletedCount = holidayRepository.deleteByCountryAndDateBetween(kr, start, end);
 
         // then
+        assertThat(deletedCount).isEqualTo(2);
+
         List<Holiday> remain = holidayRepository.findAll();
         assertThat(remain)
                 .extracting(Holiday::getId)

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -158,6 +159,40 @@ class HolidaySyncServiceTest {
         // when & then
         assertThatThrownBy(() -> holidaySyncService.upsertOneYearHolidays(countryCode, List.of(), year))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("특정 국가/연도의 공휴일을 삭제하고, 삭제된 건수를 리턴한다")
+    @Test
+    void deleteOneYearHolidays_success() {
+        // given
+        String countryCode = "KR";
+        int year = 2023;
+
+        Country country = mock(Country.class);
+
+        given(countryRepository.findByCode(countryCode))
+                .willReturn(Optional.of(country));
+
+        int deletedCount = 7;
+        given(holidayRepository.deleteByCountryAndDateBetween(
+                eq(country),
+                eq(LocalDate.of(year, 1, 1)),
+                eq(LocalDate.of(year, 12, 31))
+        )).willReturn(deletedCount);
+
+        // when
+        int result = holidaySyncService.deleteOneYearHolidays(countryCode, year);
+
+        // then
+        // 1) 삭제 쿼리가 올바른 파라미터로 호출되었는지 검증
+        verify(holidayRepository).deleteByCountryAndDateBetween(
+                eq(country),
+                eq(LocalDate.of(year, 1, 1)),
+                eq(LocalDate.of(year, 12, 31))
+        );
+
+        // 2) 반환값이 deleteByCountryAndDateBetween 의 결과와 동일한지 검증
+        assertThat(result).isEqualTo(deletedCount);
     }
 
 }

@@ -53,12 +53,18 @@ public class HolidaySyncService {
         holidayRepository.saveAll(mapper.toHolidays(commands, country));
     }
 
-    private void deleteHolidaysForYear(Country country, int year) {
-        holidayRepository.deleteByCountryAndDateBetween(
+    private int deleteHolidaysForYear(Country country, int year) {
+        return holidayRepository.deleteByCountryAndDateBetween(
                 country,
                 LocalDate.of(year, 1, 1),
                 LocalDate.of(year, 12, 31)
         );
+    }
+
+    @Transactional
+    public int deleteOneYearHolidays(String countryCode, Integer year) {
+        Country country = findCountry(countryCode);
+        return deleteHolidaysForYear(country, year);
     }
 
 }

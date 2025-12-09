@@ -106,4 +106,9 @@ public class HolidayCommandService {
         }
     }
 
+    public int deleteHolidays(Integer year, String countryCode) {
+        Holiday.verifyYearInRecentFiveYears(year);
+        return holidaySyncService.deleteOneYearHolidays(countryCode, year);
+    }
+
 }

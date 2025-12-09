@@ -4,8 +4,8 @@ import com.company.holiday.holiday_service.api.application.dto.CountryUpsertComm
 import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertCommand;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayCommandMapper;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshResponse;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidaySyncResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
 import com.company.holiday.holiday_service.clients.nager.NagerClient;
 import com.company.holiday.holiday_service.clients.nager.dto.NagerAvailableCountryResponse;
 import com.company.holiday.holiday_service.clients.nager.dto.NagerPublicHolidayResponse;
@@ -165,7 +165,7 @@ class HolidayCommandServiceTest {
 
     @DisplayName("나라, 연도의 재동기화를 진행하고, 응답에 공휴일 수를 담아 리턴한다.")
     @Test
-    void refreshHolidays_success() {
+    void refreshHolidays() {
         // given
         int year = 2023;
         String countryCode = "KR";
@@ -264,6 +264,48 @@ class HolidayCommandServiceTest {
         // when & then
         assertThatThrownBy(() -> holidayCommandService.refreshHolidays(invalidYear, countryCode))
                 .isInstanceOf(InvalidValueException.class);
+    }
+
+    @DisplayName("특정 국가/연도의 공휴일을 삭제하고, 삭제된 건수를 반환한다")
+    @Test
+    void deleteHolidays() {
+        // given
+        int year = 2023;
+        String countryCode = "KR";
+
+        // HolidaySyncService 가 7건 삭제했다고 가정
+        given(holidaySyncService.deleteOneYearHolidays(countryCode, year))
+                .willReturn(7);
+
+        // when
+        int result = holidayCommandService.deleteHolidays(year, countryCode);
+
+        // then
+        // HolidaySyncService 가 올바른 파라미터로 호출되었는지
+        verify(holidaySyncService).deleteOneYearHolidays(countryCode, year);
+
+        // 반환값이 삭제 건수와 동일한지
+        assertThat(result).isEqualTo(7);
+    }
+
+    @DisplayName("삭제 시 HolidaySyncService에서 EntityNotFoundException이 발생하면 그대로 전파된다")
+    @Test
+    void deleteHolidays_entityNotFound() {
+        // given
+        int year = 2023;
+        String countryCode = "ZZ";
+
+        given(holidaySyncService.deleteOneYearHolidays(countryCode, year))
+                .willThrow(new EntityNotFoundException(
+                        ErrorCode.ENTITY_NOT_FOUND,
+                        "존재하지 않는 국가 코드입니다. countryCode=" + countryCode
+                ));
+
+        // when & then
+        assertThatThrownBy(() -> holidayCommandService.deleteHolidays(year, countryCode))
+                .isInstanceOf(EntityNotFoundException.class);
+
+        verify(holidaySyncService).deleteOneYearHolidays(countryCode, year);
     }
 
 }
