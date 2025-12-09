@@ -27,7 +27,6 @@ public class HolidayCommandService {
     private static final int SYNC_END_YEAR = 2025;
 
     public HolidaySyncResponse syncCountriesAndHolidays() {
-        long startTime = System.currentTimeMillis();
 
         List<CountryUpsertCommand> countryCommands = fetchCountries();
         log.info("[HolidaySync] 시작 - 가용 국가 수={}개", countryCommands.size());
@@ -42,10 +41,7 @@ public class HolidayCommandService {
             log.info("[HolidaySync] 최근 5년 공휴일 동기화 완료 - 국가 코드={}, 공휴일 개수={}", countryCommand.code(), count);
         }
 
-        long elapsed = System.currentTimeMillis() - startTime;
-        log.info("[HolidaySync] 전체 동기화 완료 - 국가 수 ={}, 공휴일 수 ={}, 전체 소요시간={}ms",
-                countryCommands.size(), syncedHolidaysCount, elapsed);
-
+        log.info("[HolidaySync] 전체 동기화 완료 - 국가 수 ={}, 공휴일 수 ={}", countryCommands.size(), syncedHolidaysCount);
         return new HolidaySyncResponse(countryCommands.size(), syncedHolidaysCount);
     }
 
