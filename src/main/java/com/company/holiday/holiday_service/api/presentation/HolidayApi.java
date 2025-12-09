@@ -1,9 +1,9 @@
 package com.company.holiday.holiday_service.api.presentation;
 
 import com.company.holiday.holiday_service.api.application.HolidayCommandService;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshRequest;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshResponse;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidaySyncResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayRefreshRequest;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

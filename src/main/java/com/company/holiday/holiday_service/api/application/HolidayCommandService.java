@@ -4,9 +4,10 @@ import com.company.holiday.holiday_service.api.application.dto.CountryUpsertComm
 import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertCommand;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayCommandMapper;
 import com.company.holiday.holiday_service.api.domain.Holiday;
+import com.company.holiday.holiday_service.api.domain.HolidaySyncRange;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshResponse;
-import com.company.holiday.holiday_service.api.presentation.dto.HolidaySyncResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
 import com.company.holiday.holiday_service.clients.nager.NagerClient;
 import com.company.holiday.holiday_service.global.error.ErrorCode;
 import com.company.holiday.holiday_service.global.error.exception.EntityNotFoundException;
@@ -32,9 +33,6 @@ public class HolidayCommandService {
 
     private final CountrySyncService countrySyncService;
     private final HolidaySyncService holidaySyncService;
-
-    private static final int SYNC_START_YEAR = 2021;
-    private static final int SYNC_END_YEAR = 2025;
 
     public HolidaySyncResponse syncCountriesAndHolidays() {
         List<CountryUpsertCommand> countryCommands = fetchCountries();
@@ -64,7 +62,7 @@ public class HolidayCommandService {
 
     private int syncRecentFiveYearsHolidays(CountryUpsertCommand countryCommand) {
         List<HolidayUpsertCommand> holidayCommands = new ArrayList<>();
-        for (int year = SYNC_START_YEAR; year <= SYNC_END_YEAR; year++) {
+        for (int year = HolidaySyncRange.START_YEAR; year <= HolidaySyncRange.END_YEAR; year++) {
             holidayCommands.addAll(fetchHolidays(countryCommand.code(), year));
         }
 

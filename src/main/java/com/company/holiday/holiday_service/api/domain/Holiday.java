@@ -124,7 +124,7 @@ public class Holiday {
     }
 
     public static boolean verifyYearInRecentFiveYears(int year) {
-        if (year < 2021 || year > 2025) {
+        if (year < HolidaySyncRange.START_YEAR || year > HolidaySyncRange.END_YEAR) {
             throw new InvalidValueException(ErrorCode.YEAR_OUT_OF_RANGE, "year=" + year + " (허용 범위: 2021~2025)");
         }
         return true;

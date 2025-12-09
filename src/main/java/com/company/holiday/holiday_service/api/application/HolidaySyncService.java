@@ -3,6 +3,7 @@ package com.company.holiday.holiday_service.api.application;
 import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertCommand;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayDomainMapper;
 import com.company.holiday.holiday_service.api.domain.Country;
+import com.company.holiday.holiday_service.api.domain.HolidaySyncRange;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
 import com.company.holiday.holiday_service.api.infra.HolidayRepository;
 import com.company.holiday.holiday_service.global.error.ErrorCode;
@@ -22,9 +23,6 @@ public class HolidaySyncService {
     private final HolidayRepository holidayRepository;
     private final HolidayDomainMapper mapper;
 
-    private static final int SYNC_START_YEAR = 2021;
-    private static final int SYNC_END_YEAR = 2025;
-
     @Transactional
     public void upsertRecentFiveYearsHolidays(String countryCode, List<HolidayUpsertCommand> commands) {
         Country country = findCountry(countryCode);
@@ -43,8 +41,8 @@ public class HolidaySyncService {
     private void deleteHolidaysForRecentFiveYears(Country country) {
         holidayRepository.deleteByCountryAndDateBetween(
                 country,
-                LocalDate.of(SYNC_START_YEAR, 1, 1),
-                LocalDate.of(SYNC_END_YEAR, 12, 31)
+                LocalDate.of(HolidaySyncRange.START_YEAR, 1, 1),
+                LocalDate.of(HolidaySyncRange.END_YEAR, 12, 31)
         );
     }
 
