@@ -31,7 +31,6 @@ public class GlobalExceptionAdvice {
 
     // 4xx
     @ExceptionHandler({
-            MethodArgumentNotValidException.class,
             BindException.class,
             MethodArgumentTypeMismatchException.class,
             HttpMessageNotReadableException.class,
@@ -47,10 +46,16 @@ public class GlobalExceptionAdvice {
         return toResponse(ErrorCode.INVALID_REQUEST);
     }
 
+    // 4xx - @Valid, @Validated 핸들링
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("handleMethodArgumentNotValidException", e);
+        return toResponse(ErrorCode.INVALID_REQUEST, e.getBindingResult());
+    }
+
     // 내부 5xx, 잡지 못한 예외
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> handleException(Exception e,
-                                                            HttpServletRequest request) {
+    protected ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
         log.error("[UnhandledException] {} {}",
                 request.getMethod(), request.getRequestURI(), e);
         return toResponse(ErrorCode.INTERNAL_SERVER_ERROR);
