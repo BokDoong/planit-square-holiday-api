@@ -4,18 +4,25 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
-
   h2:
     console:
       enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        highlight_sql: true
+#        use_sql_comments: true
+#        default_batch_fetch_size: 100
 
 server:
   port: 8080
+
+#logging:
+#  level:
+#    org.springframework.core.LocalVariableTableParameterNameDiscoverer: error
+#    org.hibernate.SQL: debug
+#    org.hibernate.type.descriptor.sql.BasicBinder: debug
