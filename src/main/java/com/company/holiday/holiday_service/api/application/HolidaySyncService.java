@@ -48,4 +48,19 @@ public class HolidaySyncService {
         );
     }
 
+    @Transactional
+    public void upsertOneYearHolidays(String countryCode, List<HolidayUpsertCommand> commands, int year) {
+        Country country = findCountry(countryCode);
+        deleteHolidaysForYear(country, year);
+        holidayRepository.saveAll(mapper.toHolidays(commands, country));
+    }
+
+    private void deleteHolidaysForYear(Country country, int year) {
+        holidayRepository.deleteByCountryAndDateBetween(
+                country,
+                LocalDate.of(year, 1, 1),
+                LocalDate.of(year, 12, 31)
+        );
+    }
+
 }

@@ -12,6 +12,22 @@ class CountryRepositoryTest extends IntegrationTestSupport {
     @Autowired
     private CountryRepository countryRepository;
 
+    @DisplayName("나라 코드로 나라의 존재 유무를 확인한다.")
+    @Test
+    void existsByCode() {
+        // given
+        Country country = Country.of("KR", "대한민국");
+        countryRepository.save(country);
+
+        // when
+        Boolean exists = countryRepository.existsByCode(country.getCode());
+        Boolean notExists = countryRepository.existsByCode("JP");
+
+        // then
+        Assertions.assertThat(exists).isTrue();
+        Assertions.assertThat(notExists).isFalse();
+    }
+
     @DisplayName("나라 코드로 나라를 찾는다.")
     @Test
     void findByCode() {

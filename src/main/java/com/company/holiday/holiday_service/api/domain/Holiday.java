@@ -1,5 +1,7 @@
 package com.company.holiday.holiday_service.api.domain;
 
+import com.company.holiday.holiday_service.global.error.ErrorCode;
+import com.company.holiday.holiday_service.global.error.exception.InvalidValueException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +21,12 @@ import java.util.List;
 @Entity
 @Table(
         name = "holiday",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_holiday_country_date_local_name",
+                        columnNames = {"country_id", "date", "local_name"}
+                )
+        },
         indexes = {
                 @Index(
                         name = "idx_holiday_country_date",
@@ -113,6 +121,13 @@ public class Holiday {
         return Arrays.stream(typesRaw.split(","))
                 .map(HolidayType::of)
                 .toList();
+    }
+
+    public static boolean verifyYearInRecentFiveYears(int year) {
+        if (year < 2021 || year > 2025) {
+            throw new InvalidValueException(ErrorCode.YEAR_OUT_OF_RANGE, "year=" + year + " (허용 범위: 2021~2025)");
+        }
+        return true;
     }
 
 }

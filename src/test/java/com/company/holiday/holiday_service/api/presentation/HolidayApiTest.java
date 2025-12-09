@@ -1,8 +1,10 @@
 package com.company.holiday.holiday_service.api.presentation;
 
 import com.company.holiday.holiday_service.ApiTestSupport;
+import com.company.holiday.holiday_service.api.presentation.dto.HolidayRefreshRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -19,6 +21,38 @@ class HolidayApiTest extends ApiTestSupport {
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("특정 국가와 연도의 공휴일을 재동기화한다.")
+    @Test
+    void refreshHolidays_success() throws Exception {
+        // given
+        HolidayRefreshRequest request = new HolidayRefreshRequest("KR", 2024);
+
+        // when // then
+        mockMvc.perform(
+                        post("/api/v1/holidays/refresh")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("countryCode가 공백이거나 year가 없으면 400을 반환한다.")
+    @Test
+    void refreshHolidays_validationFail() throws Exception {
+        // given
+        HolidayRefreshRequest invalidRequest = new HolidayRefreshRequest(" ", null);
+
+        // when // then
+        mockMvc.perform(
+                        post("/api/v1/holidays/refresh")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
 }
