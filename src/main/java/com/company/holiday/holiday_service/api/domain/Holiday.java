@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.company.holiday.holiday_service.api.domain.HolidayYearRangeCalculator.*;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -131,7 +133,8 @@ public class Holiday {
     }
 
     public static boolean verifyYearInRecentFiveYears(int year) {
-        if (year < HolidaySyncRange.START_YEAR || year > HolidaySyncRange.END_YEAR) {
+
+        if (year < lastFiveYears().fromYear() || year > lastFiveYears().toYear()) {
             throw new InvalidValueException(ErrorCode.YEAR_OUT_OF_RANGE, "year=" + year + " (허용 범위: 2021~2025)");
         }
         return true;
