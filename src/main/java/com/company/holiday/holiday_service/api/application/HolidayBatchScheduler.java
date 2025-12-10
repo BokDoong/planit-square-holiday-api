@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-// TODO : 다중 서버 환경에서 ShedLock, 외부 스케쥴러 도입 고
+// TODO : 다중 서버 환경에서 ShedLock, 외부 스케쥴러 도입 고려
 @Component
 @RequiredArgsConstructor
 public class HolidayBatchScheduler {
