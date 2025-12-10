@@ -123,6 +123,13 @@ public class Holiday {
                 .toList();
     }
 
+    public List<String> getCounties() {
+        if (countiesRaw == null || countiesRaw.isEmpty()) {
+            return List.of();
+        }
+        return List.of(countiesRaw.split(","));
+    }
+
     public static boolean verifyYearInRecentFiveYears(int year) {
         if (year < HolidaySyncRange.START_YEAR || year > HolidaySyncRange.END_YEAR) {
             throw new InvalidValueException(ErrorCode.YEAR_OUT_OF_RANGE, "year=" + year + " (허용 범위: 2021~2025)");

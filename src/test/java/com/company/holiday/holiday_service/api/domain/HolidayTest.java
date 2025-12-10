@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 class HolidayTest {
 
@@ -60,6 +61,76 @@ class HolidayTest {
 
         // then
         assertThat(result).isTrue();
+    }
+
+    @DisplayName("countiesRaw가 null이면 빈 리스트를 반환한다")
+    @Test
+    void getCounties_null() {
+        // given
+        Holiday holiday = Holiday.of(
+                mock(Country.class),
+                LocalDate.now(),
+                "local",
+                "name",
+                true,
+                false,
+                null,
+                null,
+                null // countiesRaw = null
+        );
+
+        // when
+        List<String> result = holiday.getCounties();
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("countiesRaw가 빈 문자열이면 빈 리스트를 반환한다")
+    @Test
+    void getCounties_empty() {
+        // given
+        Holiday holiday = Holiday.of(
+                mock(Country.class),
+                LocalDate.now(),
+                "local",
+                "name",
+                true,
+                false,
+                null,
+                null,
+                "" // countiesRaw = ""
+        );
+
+        // when
+        List<String> result = holiday.getCounties();
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("countiesRaw가 쉼표로 구분된 경우 각각을 리스트로 반환한다")
+    @Test
+    void getCounties_parsed() {
+        // given
+        Holiday holiday = Holiday.of(
+                mock(Country.class),
+                LocalDate.now(),
+                "local",
+                "name",
+                true,
+                false,
+                null,
+                null,
+                "KR-11,KR-26"
+        );
+
+        // when
+        List<String> result = holiday.getCounties();
+
+        // then
+        assertThat(result)
+                .containsExactly("KR-11", "KR-26");
     }
 
 }
