@@ -49,13 +49,11 @@ public class ErrorResponse {
     private static class FieldErrorInfo {
 
         private String field;
-        private String value;
         private String reason;
 
         @Builder(access = AccessLevel.PRIVATE)
-        private FieldErrorInfo(String field, String value, String reason) {
+        private FieldErrorInfo(String field, String reason) {
             this.field = field;
-            this.value = value;
             this.reason = reason;
         }
 
@@ -64,7 +62,6 @@ public class ErrorResponse {
             return fieldErrors.stream().
                     map(error -> FieldErrorInfo.builder()
                             .field(error.getField())
-                            .value((error.getRejectedValue() == null) ? null : error.getRejectedValue().toString())
                             .reason(error.getDefaultMessage())
                             .build())
                     .collect(Collectors.toList());
