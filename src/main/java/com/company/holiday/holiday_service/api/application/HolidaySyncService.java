@@ -22,6 +22,7 @@ public class HolidaySyncService {
     private final HolidayRepository holidayRepository;
     private final HolidayDomainMapper mapper;
 
+    // TODO : Delete&Insert vs Update&Insert 트레이드오프 비교 및 개선
     @Transactional
     public int upsertHolidaysInRange(String countryCode, LocalDate start, LocalDate end, List<HolidayUpsertCommand> commands) {
         Country country = findCountry(countryCode);

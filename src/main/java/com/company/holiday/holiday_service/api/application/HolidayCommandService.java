@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.company.holiday.holiday_service.api.domain.HolidayYearRangeCalculator.lastFiveYears;
+import static com.company.holiday.holiday_service.api.domain.HolidayYearRangeCalculator.*;
 
 @Slf4j
 @Service
@@ -35,16 +35,26 @@ public class HolidayCommandService {
     private final CountrySyncService countrySyncService;
     private final HolidaySyncService holidaySyncService;
 
-    // 최근 5년 동기화
+    // 수동 적재 ( 5년 )
     public HolidaySyncResponse syncCountriesAndHolidays() {
+        return syncCountriesAndHolidaysInRange(lastFiveYears());
+    }
+
+    // 배치용 적재 ( 2년 )
+    public void syncCountriesAndHolidaysForBatch() {
+        HolidaySyncResponse response = syncCountriesAndHolidaysInRange(lastTwoYears());
+        log.info("[HolidaySync-Batch] 완료 - countriesCount={}, holidaysCount={}", response.countriesCount(), response.holidaysCount());
+    }
+
+    private HolidaySyncResponse syncCountriesAndHolidaysInRange(YearRange range) {
         // 1) 나라 목록 Fetch & Upsert
         List<CountryUpsertCommand> countryCommands = fetchCountries();
         countrySyncService.upsertCountries(countryCommands);
         log.info("[HolidaySync] 국가 동기화 완료 - countriesCount={}", countryCommands.size());
 
-        // 2) 최근 5년 범위 계산
-        LocalDate startDate = LocalDate.of(lastFiveYears().fromYear(), 1, 1);
-        LocalDate endDate   = LocalDate.of(lastFiveYears().toYear(),   12, 31);
+        // 2) 연도 범위를 날짜로 변환
+        LocalDate startDate = LocalDate.of(range.fromYear(), 1, 1);
+        LocalDate endDate = LocalDate.of(range.toYear(),   12, 31);
 
         // 3) 각 나라별로 공휴일 Fetch & Upsert
         int totalSyncedHolidays = syncHolidays(countryCommands, startDate, endDate);
@@ -59,13 +69,12 @@ public class HolidayCommandService {
                 .toList();
     }
 
-    private int syncHolidays(
-            List<CountryUpsertCommand> countryCommands,
-            LocalDate startDate,
-            LocalDate endDate
-    ) {
+    private int syncHolidays(List<CountryUpsertCommand> countryCommands, LocalDate startDate, LocalDate endDate) {
+
         int total = 0;
+
         for (CountryUpsertCommand countryCommand : countryCommands) {
+
             String countryCode = countryCommand.code();
             log.info("[HolidaySync] {} 국가 {}~{}년 공휴일 동기화 시작", countryCode, startDate.getYear(), endDate.getYear());
 
@@ -75,6 +84,7 @@ public class HolidayCommandService {
 
             log.info("[HolidaySync] {} 국가 공휴일 동기화 완료 - 저장된 공휴일 개수={}", countryCode, synced);
         }
+
         return total;
     }
 
@@ -92,6 +102,7 @@ public class HolidayCommandService {
                 .toList();
     }
 
+    // Nager 에서 중복되는 응답을 제거
     List<HolidayUpsertCommand> deduplicateByDateAndLocalName(List<HolidayUpsertCommand> commands) {
         record HolidayKey(LocalDate date, String localName) {}
 
@@ -132,4 +143,5 @@ public class HolidayCommandService {
             );
         }
     }
+
 }
