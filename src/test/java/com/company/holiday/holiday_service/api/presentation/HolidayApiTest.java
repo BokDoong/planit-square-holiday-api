@@ -5,10 +5,13 @@ import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayD
 import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayRefreshRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,6 +74,59 @@ class HolidayApiTest extends ApiTestSupport {
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("공휴일을 검색한다.")
+    @Test
+    void searchHolidays_success() throws Exception {
+        // given
+        given(holidayQueryService.search(any(), any(Pageable.class)))
+                .willReturn(Page.empty());
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/v1/holidays")
+                                .param("countryCode", "KR")
+                                .param("year", "2024")
+                                .param("from", "2024-01-01")
+                                .param("to", "2024-12-31")
+                                .param("page", "0")
+                                .param("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("from 이 to 보다 이후 날짜이면 400 Bad Request를 반환한다.")
+    @Test
+    void searchHolidays_invalidRange() throws Exception {
+        // when // then
+        mockMvc.perform(
+                        get("/api/v1/holidays")
+                                .param("countryCode", "KR")
+                                .param("from", "2024-12-31")
+                                .param("to", "2024-01-01")
+                                .param("page", "0")
+                                .param("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("날짜 형식이 맞지 않는다면 400 Bad Request를 반환한다.")
+    @Test
+    void searchHolidays_invalidDateFormat() throws Exception {
+        // when // then
+        mockMvc.perform(
+                        get("/api/v1/holidays")
+                                .param("countryCode", "KR")
+                                .param("from", "2024:01:01")
+                                .param("to", "2024:12:31")
+                                .param("page", "0")
+                                .param("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
 }

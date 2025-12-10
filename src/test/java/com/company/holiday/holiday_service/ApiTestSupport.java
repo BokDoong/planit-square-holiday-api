@@ -2,6 +2,8 @@ package com.company.holiday.holiday_service;
 
 import com.company.holiday.holiday_service.api.application.CountryQueryService;
 import com.company.holiday.holiday_service.api.application.HolidayCommandService;
+import com.company.holiday.holiday_service.api.application.HolidayQueryService;
+import com.company.holiday.holiday_service.api.application.mapper.HolidayQueryMapper;
 import com.company.holiday.holiday_service.api.presentation.CountryApi;
 import com.company.holiday.holiday_service.api.presentation.HolidayApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +29,12 @@ public abstract class ApiTestSupport {
 
     @MockitoBean
     protected HolidayCommandService holidayCommandService;
+
+    @MockitoBean
+    protected HolidayQueryService holidayQueryService;
+
+    @MockitoBean
+    protected HolidayQueryMapper holidayQueryMapper;
 
     @MockitoBean
     protected CountryQueryService countryQueryService;
