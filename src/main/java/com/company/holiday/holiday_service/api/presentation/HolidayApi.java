@@ -26,7 +26,7 @@ public class HolidayApi {
         return holidayCommandService.refreshHolidays(request.getYear(), request.getCountryCode());
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public int deleteHolidays(@RequestBody @Valid HolidayDeleteRequest request) {
         return holidayCommandService.deleteHolidays(request.getYear(), request.getCountryCode());
     }

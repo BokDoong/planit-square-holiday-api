@@ -7,6 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 class CountryRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -41,6 +43,30 @@ class CountryRepositoryTest extends IntegrationTestSupport {
         // then
         Assertions.assertThat(savedCountry.getCode()).isEqualTo(country.getCode());
         Assertions.assertThat(savedCountry.getName()).isEqualTo(country.getName());
+    }
+
+    @DisplayName("나라 코드를 기준으로 오름차순 정렬하여 전체 국가 목록을 조회한다.")
+    @Test
+    void findAllByOrderByCodeAsc() {
+        // given
+        Country kr = Country.of("KR", "대한민국");
+        Country us = Country.of("US", "미국");
+        Country jp = Country.of("JP", "일본");
+
+        countryRepository.save(kr);
+        countryRepository.save(us);
+        countryRepository.save(jp);
+
+        // when
+        List<Country> countries = countryRepository.findAllByOrderByCodeAsc();
+
+        // then
+        Assertions.assertThat(countries).hasSize(3);
+
+        // 코드 순서: JP → KR → US
+        Assertions.assertThat(countries.get(0).getCode()).isEqualTo("JP");
+        Assertions.assertThat(countries.get(1).getCode()).isEqualTo("KR");
+        Assertions.assertThat(countries.get(2).getCode()).isEqualTo("US");
     }
 
 }

@@ -3,6 +3,7 @@ package com.company.holiday.holiday_service.api.infra;
 import com.company.holiday.holiday_service.api.domain.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CountryRepository extends JpaRepository<Country, Long> {
@@ -10,5 +11,7 @@ public interface CountryRepository extends JpaRepository<Country, Long> {
     Boolean existsByCode(String code);
 
     Optional<Country> findByCode(String code);
+
+    List<Country> findAllByOrderByCodeAsc();
 
 }

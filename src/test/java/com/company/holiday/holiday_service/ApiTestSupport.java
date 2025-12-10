@@ -1,6 +1,8 @@
 package com.company.holiday.holiday_service;
 
+import com.company.holiday.holiday_service.api.application.CountryQueryService;
 import com.company.holiday.holiday_service.api.application.HolidayCommandService;
+import com.company.holiday.holiday_service.api.presentation.CountryApi;
 import com.company.holiday.holiday_service.api.presentation.HolidayApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {
-        HolidayApi.class,
+        HolidayApi.class, CountryApi.class
 })
 public abstract class ApiTestSupport {
 
@@ -25,5 +27,8 @@ public abstract class ApiTestSupport {
 
     @MockitoBean
     protected HolidayCommandService holidayCommandService;
+
+    @MockitoBean
+    protected CountryQueryService countryQueryService;
 
 }
