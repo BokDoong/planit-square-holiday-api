@@ -26,7 +26,7 @@ class HolidayRepositoryTest extends IntegrationTestSupport {
 
     @DisplayName("특정 나라의 날짜 구간 안에 있는 모든 공휴일을 삭제한다.")
     @Test
-    void deleteByCountryAndDateBetween() {
+    void deleteInRange() {
         // given
         Country kr = countryRepository.save(Country.of("KR", "Korea, Republic of"));
 
@@ -56,7 +56,7 @@ class HolidayRepositoryTest extends IntegrationTestSupport {
         LocalDate start = LocalDate.of(2025, 1, 1);
         LocalDate end = LocalDate.of(2025, 1, 31);
 
-        int deletedCount = holidayRepository.deleteByCountryAndDateBetween(kr, start, end);
+        int deletedCount = holidayRepository.deleteInRange(kr, start, end);
 
         // then
         assertThat(deletedCount).isEqualTo(2);
