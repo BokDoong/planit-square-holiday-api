@@ -68,7 +68,8 @@ java -jar build/libs/holiday-service-0.0.1-SNAPSHOT.jar
 
 총 53개의 테스트 작성, 과제 요구사항인 ./gradlew clean test 성공 스크린샷은 아래와 같습니다.
 
-![image.png](attachment:34d6ab3a-0cf4-4b16-a6a7-4fe23130d1a4:image.png)
+<img width="1386" height="211" alt="image" src="https://github.com/user-attachments/assets/d144e79a-bef0-4038-8f8b-860e5c66e72e" />
+
 
 <br></br>
 
