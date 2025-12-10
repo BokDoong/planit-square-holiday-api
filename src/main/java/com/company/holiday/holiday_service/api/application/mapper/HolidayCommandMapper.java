@@ -11,14 +11,14 @@ import java.util.List;
 @Component
 public class HolidayCommandMapper {
 
-    public CountryUpsertCommand toCountryCommand(NagerAvailableCountryResponse dto) {
+    public CountryUpsertCommand toCommand(NagerAvailableCountryResponse dto) {
         return new CountryUpsertCommand(
                 dto.countryCode(),
                 dto.name()
         );
     }
 
-    public HolidayUpsertCommand toHolidayCommand(NagerPublicHolidayResponse dto) {
+    public HolidayUpsertCommand toCommand(NagerPublicHolidayResponse dto) {
         return new HolidayUpsertCommand(
                 dto.countryCode(),
                 dto.date(),

@@ -84,13 +84,13 @@ public class HolidayCommandService {
 
     private List<CountryUpsertCommand> fetchCountries() {
         return nagerClient.getAvailableCountries().stream()
-                .map(mapper::toCountryCommand)
+                .map(mapper::toCommand)
                 .toList();
     }
 
     private List<HolidayUpsertCommand> fetchHolidays(String countryCode, int year) {
         return nagerClient.getPublicHolidays(year, countryCode).stream()
-                .map(mapper::toHolidayCommand)
+                .map(mapper::toCommand)
                 .toList();
     }
 

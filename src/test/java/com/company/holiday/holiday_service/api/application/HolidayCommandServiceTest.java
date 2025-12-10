@@ -76,8 +76,8 @@ class HolidayCommandServiceTest {
         var krCommand = new CountryUpsertCommand("KR", "Korea");
         var usCommand = new CountryUpsertCommand("US", "United States");
 
-        given(mapper.toCountryCommand(krResponse)).willReturn(krCommand);
-        given(mapper.toCountryCommand(usResponse)).willReturn(usCommand);
+        given(mapper.toCommand(krResponse)).willReturn(krCommand);
+        given(mapper.toCommand(usResponse)).willReturn(usCommand);
 
         // 3) 공휴일 응답 + HolidayUpsertCommand 변환
         var krHolidayDto = mock(NagerPublicHolidayResponse.class);
@@ -92,8 +92,8 @@ class HolidayCommandServiceTest {
         given(nagerClient.getPublicHolidays(anyInt(), eq("US")))
                 .willReturn(List.of(usHolidayDto));
 
-        given(mapper.toHolidayCommand(krHolidayDto)).willReturn(krHolidayCmd);
-        given(mapper.toHolidayCommand(usHolidayDto)).willReturn(usHolidayCmd);
+        given(mapper.toCommand(krHolidayDto)).willReturn(krHolidayCmd);
+        given(mapper.toCommand(usHolidayDto)).willReturn(usHolidayCmd);
 
         given(holidaySyncService.upsertRecentFiveYearsHolidays(eq("KR"), anyList()))
                 .willReturn(5);
@@ -200,8 +200,8 @@ class HolidayCommandServiceTest {
                 "Independence Movement Day"
         );
 
-        given(mapper.toHolidayCommand(dto1)).willReturn(cmd1);
-        given(mapper.toHolidayCommand(dto2)).willReturn(cmd2);
+        given(mapper.toCommand(dto1)).willReturn(cmd1);
+        given(mapper.toCommand(dto2)).willReturn(cmd2);
 
         // when
         HolidayRefreshResponse response = holidayCommandService.refreshHolidays(year, countryCode);
@@ -214,8 +214,8 @@ class HolidayCommandServiceTest {
         verify(nagerClient).getPublicHolidays(year, countryCode);
 
         // 3) DTO → Command 매핑
-        verify(mapper).toHolidayCommand(dto1);
-        verify(mapper).toHolidayCommand(dto2);
+        verify(mapper).toCommand(dto1);
+        verify(mapper).toCommand(dto2);
 
         // 4) 동기화 서비스 호출 (deduplicate 이후에도 두 개가 남아야 한다)
         verify(holidaySyncService).upsertOneYearHolidays(countryCode, List.of(cmd1, cmd2), year);

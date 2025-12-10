@@ -24,13 +24,13 @@ class HolidayCommandMapperTest {
 
     @DisplayName("NagerAvailableCountryResponse를 CountryUpsertCommand로 매핑한다.")
     @Test
-    void toCountryCommand() {
+    void toCountryUpsertCommand() {
         // given
         NagerAvailableCountryResponse dto =
                 new NagerAvailableCountryResponse("KR", "Korea, Republic of");
 
         // when
-        CountryUpsertCommand command = mapper.toCountryCommand(dto);
+        CountryUpsertCommand command = mapper.toCommand(dto);
 
         // then
         assertThat(command.code()).isEqualTo("KR");
@@ -39,7 +39,7 @@ class HolidayCommandMapperTest {
 
     @DisplayName("NagerPublicHolidayResponse를 HolidayUpsertCommand로 매핑한다.")
     @Test
-    void toHolidayCommand() {
+    void toHolidayUpsertCommand() {
         // given
         NagerPublicHolidayResponse dto = new NagerPublicHolidayResponse(
                 LocalDate.of(2025, 1, 1),
@@ -54,7 +54,7 @@ class HolidayCommandMapperTest {
         );
 
         // when
-        HolidayUpsertCommand command = mapper.toHolidayCommand(dto);
+        HolidayUpsertCommand command = mapper.toCommand(dto);
 
         // then
         assertThat(command.countryCode()).isEqualTo("KR");
@@ -74,7 +74,7 @@ class HolidayCommandMapperTest {
 
     @DisplayName("공휴일 타입, 연방주, 공휴일 설립일이 없을 때, HolidayUpsertCommand는 launchYear=null, types=빈 리스트, counties=null로 매핑된다.")
     @Test
-    void handleNullOrEmptyFieldsToHolidayCommand() {
+    void handleNullOrEmptyFieldsToCommand() {
         // given
         NagerPublicHolidayResponse dtoWithNulls = new NagerPublicHolidayResponse(
                 LocalDate.of(2025, 5, 5),
@@ -89,7 +89,7 @@ class HolidayCommandMapperTest {
         );
 
         // when
-        HolidayUpsertCommand command = mapper.toHolidayCommand(dtoWithNulls);
+        HolidayUpsertCommand command = mapper.toCommand(dtoWithNulls);
 
         // then
         assertThat(command.launchYear()).isNull();
