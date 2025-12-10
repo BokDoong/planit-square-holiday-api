@@ -78,7 +78,7 @@ class HolidayApiTest extends ApiTestSupport {
 
     @DisplayName("공휴일을 검색한다.")
     @Test
-    void searchHolidays_success() throws Exception {
+    void searchHolidays() throws Exception {
         // given
         given(holidayQueryService.search(any(), any(Pageable.class)))
                 .willReturn(Page.empty());
@@ -124,6 +124,50 @@ class HolidayApiTest extends ApiTestSupport {
                                 .param("to", "2024:12:31")
                                 .param("page", "0")
                                 .param("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("Public 타입의 공휴일을 검색한다.")
+    @Test
+    void searchHolidaysWithTypes() throws Exception {
+        // given
+        given(holidayQueryService.search(any(), any(Pageable.class)))
+                .willReturn(Page.empty());
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/v1/holidays")
+                                .param("countryCode", "KR")
+                                .param("year", "2024")
+                                .param("from", "2024-01-01")
+                                .param("to", "2024-12-31")
+                                .param("page", "0")
+                                .param("size", "20")
+                                .param("type", "PUBLIC")
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Invalid 타입의 공휴일을 검색한다.")
+    @Test
+    void searchHolidaysWithTypes_invalidTypes() throws Exception {
+        // given
+        given(holidayQueryService.search(any(), any(Pageable.class)))
+                .willReturn(Page.empty());
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/v1/holidays")
+                                .param("countryCode", "KR")
+                                .param("year", "2024")
+                                .param("from", "2024-01-01")
+                                .param("to", "2024-12-31")
+                                .param("page", "0")
+                                .param("size", "20")
+                                .param("type", "PUBLICXXXXXXX")
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());

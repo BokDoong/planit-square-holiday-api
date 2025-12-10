@@ -15,7 +15,8 @@ public class HolidayQueryMapper {
                 request.countryCode(),
                 request.year(),
                 request.from(),
-                request.to()
+                request.to(),
+                request.type()
         );
     }
 

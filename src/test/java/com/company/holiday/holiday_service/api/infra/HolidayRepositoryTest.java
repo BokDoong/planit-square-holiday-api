@@ -187,4 +187,131 @@ class HolidayRepositoryTest extends IntegrationTestSupport {
         assertThat(resultForEmptyRange.getContent()).isEmpty();
     }
 
+    @DisplayName("국가 코드, 날짜 범위, 타입 토큰으로 공휴일을 페이지네이션하여 조회한다.")
+    @Test
+    void findByCountryCodeAndDateBetweenAndTypesRawContaining_withPagingAndTypeFilter() {
+        // given
+        Country kr = countryRepository.save(Country.of("KR", "Korea, Republic of"));
+        Country us = countryRepository.save(Country.of("US", "United States"));
+
+        // KR - Public
+        Holiday krJan1Public = holidayRepository.save(createHolidayWithTypes(
+                kr,
+                LocalDate.of(2025, 1, 1),
+                "새해",
+                "New Year",
+                "Public"
+        ));
+        // KR - Bank (필터 대상 아님)
+        Holiday krJan10Bank = holidayRepository.save(createHolidayWithTypes(
+                kr,
+                LocalDate.of(2025, 1, 10),
+                "테스트1",
+                "Test1",
+                "Bank"
+        ));
+        // KR - Public,School (Public 포함 → 필터 대상)
+        Holiday krJan15PublicSchool = holidayRepository.save(createHolidayWithTypes(
+                kr,
+                LocalDate.of(2025, 1, 15),
+                "테스트2",
+                "Test2",
+                "Public,School"
+        ));
+        // 범위 밖 (2월) - Public (날짜 조건에서 제외)
+        Holiday krFeb1Public = holidayRepository.save(createHolidayWithTypes(
+                kr,
+                LocalDate.of(2025, 2, 1),
+                "테스트3",
+                "Test3",
+                "Public"
+        ));
+        // 다른 나라(US)는 조회 대상에서 제외되어야 함
+        Holiday usJan5Public = holidayRepository.save(createHolidayWithTypes(
+                us,
+                LocalDate.of(2025, 1, 5),
+                "US Holiday",
+                "US Holiday",
+                "Public"
+        ));
+
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 31);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("date").ascending());
+
+        // when
+        Page<Holiday> page = holidayRepository.findByCountry_CodeAndDateBetweenAndTypesRawContaining(
+                "KR",
+                start,
+                end,
+                "Public",
+                pageable
+        );
+
+        // then
+        assertThat(page.getTotalElements()).isEqualTo(2);
+        assertThat(page.getContent()).hasSize(2);
+
+        // 정렬 및 필터 확인
+        assertThat(page.getContent())
+                .extracting(Holiday::getId)
+                .containsExactly(
+                        krJan1Public.getId(),
+                        krJan15PublicSchool.getId()
+                );
+
+        assertThat(page.getContent())
+                .allSatisfy(h -> {
+                    assertThat(h.getCountry().getCode()).isEqualTo("KR");
+                    assertThat(h.getDate()).isBetween(start, end);
+                    assertThat(h.getTypesRaw()).contains("Public");
+                });
+    }
+
+    @DisplayName("해당 타입 토큰에 해당하는 공휴일이 없으면 비어있는 페이지를 반환한다.")
+    @Test
+    void findByCountryCodeAndDateBetweenAndTypesRawContaining_emptyResultForTypeToken() {
+        // given
+        Country kr = countryRepository.save(Country.of("KR", "Korea, Republic of"));
+
+        // KR - Public만 존재 (Optional 타입은 없음)
+        holidayRepository.save(createHolidayWithTypes(
+                kr,
+                LocalDate.of(2025, 1, 1),
+                "새해",
+                "New Year",
+                "Public"
+        ));
+
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 12, 31);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("date").ascending());
+
+        // when
+        Page<Holiday> result = holidayRepository.findByCountry_CodeAndDateBetweenAndTypesRawContaining(
+                "KR",
+                start,
+                end,
+                "Optional",   // 존재하지 않는 타입 토큰
+                pageable
+        );
+
+        // then
+        assertThat(result.getTotalElements()).isZero();
+        assertThat(result.getContent()).isEmpty();
+    }
+
+    private Holiday createHolidayWithTypes(
+            Country country,
+            LocalDate date,
+            String localName,
+            String name,
+            String typesRaw
+    ) {
+        return Holiday.of(
+                country, date, localName, name, true, false,
+                null, typesRaw, null
+        );
+    }
+
 }

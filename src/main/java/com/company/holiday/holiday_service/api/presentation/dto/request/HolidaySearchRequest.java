@@ -1,6 +1,7 @@
 package com.company.holiday.holiday_service.api.presentation.dto.request;
 
 
+import com.company.holiday.holiday_service.api.domain.HolidayType;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +19,9 @@ public record HolidaySearchRequest(
         LocalDate from,
 
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        LocalDate to
+        LocalDate to,
+
+        HolidayType type
 
 ) {
 

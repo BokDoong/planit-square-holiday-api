@@ -26,9 +26,33 @@ public class HolidayQueryService {
 
     @Transactional(readOnly = true)
     public Page<HolidaySearchResponse> search(HolidaySearchQuery query, Pageable pageable) {
-        DateRange range = filterDateRange((query));
-        Page<Holiday> holidays = searchHolidays(query, pageable, range);
+        Page<Holiday> holidays = searchHolidays(query, pageable);
         return holidays.map(mapper::toResponse);
+    }
+
+    private Page<Holiday> searchHolidays(HolidaySearchQuery query, Pageable pageable) {
+
+        DateRange range = filterDateRange(query);
+
+        // 기본 : 나라, 연도
+        if (query.type() == null) {
+            return holidayRepository.findByCountry_CodeAndDateBetween(
+                    query.countryCode(),
+                    range.start(),
+                    range.end(),
+                    pageable
+            );
+        }
+        // 타입 필터 포함
+        else {
+            return holidayRepository.findByCountry_CodeAndDateBetweenAndTypesRawContaining(
+                    query.countryCode(),
+                    range.start(),
+                    range.end(),
+                    query.type().getValue(),
+                    pageable
+            );
+        }
     }
 
     private DateRange filterDateRange(HolidaySearchQuery query) {
@@ -75,14 +99,5 @@ public class HolidayQueryService {
     }
 
     private record DateRange(LocalDate start, LocalDate end) {}
-
-    private Page<Holiday> searchHolidays(HolidaySearchQuery query, Pageable pageable, DateRange range) {
-        return holidayRepository.findByCountry_CodeAndDateBetween(
-                query.countryCode(),
-                range.start(),
-                range.end(),
-                pageable
-        );
-    }
 
 }

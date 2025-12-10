@@ -48,6 +48,7 @@ class HolidayQueryServiceTest {
                 countryCode,
                 year,
                 null,
+                null,
                 null
         );
 
@@ -103,7 +104,8 @@ class HolidayQueryServiceTest {
                 countryCode,
                 null,
                 from,
-                to
+                to,
+                null
         );
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by("date").ascending());
@@ -145,6 +147,7 @@ class HolidayQueryServiceTest {
         String countryCode = "US";
         HolidaySearchQuery query = new HolidaySearchQuery(
                 countryCode,
+                null,
                 null,
                 null,
                 null
@@ -202,7 +205,8 @@ class HolidayQueryServiceTest {
                 countryCode,
                 null,
                 from,
-                null   // to 없음
+                null,
+                null
         );
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("date").ascending());
