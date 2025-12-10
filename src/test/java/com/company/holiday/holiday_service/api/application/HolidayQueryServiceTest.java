@@ -3,7 +3,6 @@ package com.company.holiday.holiday_service.api.application;
 import com.company.holiday.holiday_service.api.application.dto.HolidaySearchQuery;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayQueryMapper;
 import com.company.holiday.holiday_service.api.domain.Holiday;
-import com.company.holiday.holiday_service.api.domain.HolidaySyncRange;
 import com.company.holiday.holiday_service.api.infra.HolidayRepository;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySearchResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.company.holiday.holiday_service.api.domain.HolidayYearRangeCalculator.lastFiveYears;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -161,8 +161,8 @@ class HolidayQueryServiceTest {
         Page<Holiday> holidayPage =
                 new PageImpl<>(List.of(h1, h2, h3), pageable, 3);
 
-        LocalDate expectedStart = LocalDate.of(HolidaySyncRange.START_YEAR, 1, 1);
-        LocalDate expectedEnd   = LocalDate.of(HolidaySyncRange.END_YEAR, 12, 31);
+        LocalDate expectedStart = LocalDate.of(lastFiveYears().fromYear(), 1, 1);
+        LocalDate expectedEnd   = LocalDate.of(lastFiveYears().toYear(), 12, 31);
 
         given(holidayRepository.findByCountry_CodeAndDateBetween(
                 countryCode,
@@ -215,7 +215,7 @@ class HolidayQueryServiceTest {
         Page<Holiday> holidayPage = new PageImpl<>(List.of(h1), pageable, 1);
 
         LocalDate expectedStart = from;
-        LocalDate expectedEnd   = LocalDate.of(HolidaySyncRange.END_YEAR, 12, 31);
+        LocalDate expectedEnd   = LocalDate.of(lastFiveYears().toYear(), 12, 31);
 
         given(holidayRepository.findByCountry_CodeAndDateBetween(
                 countryCode,

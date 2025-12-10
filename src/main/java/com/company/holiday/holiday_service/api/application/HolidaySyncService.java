@@ -3,7 +3,6 @@ package com.company.holiday.holiday_service.api.application;
 import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertCommand;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayDomainMapper;
 import com.company.holiday.holiday_service.api.domain.Country;
-import com.company.holiday.holiday_service.api.domain.HolidaySyncRange;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
 import com.company.holiday.holiday_service.api.infra.HolidayRepository;
 import com.company.holiday.holiday_service.global.error.ErrorCode;
@@ -24,9 +23,9 @@ public class HolidaySyncService {
     private final HolidayDomainMapper mapper;
 
     @Transactional
-    public int upsertRecentFiveYearsHolidays(String countryCode, List<HolidayUpsertCommand> commands) {
+    public int upsertHolidaysInRange(String countryCode, LocalDate start, LocalDate end, List<HolidayUpsertCommand> commands) {
         Country country = findCountry(countryCode);
-        deleteHolidaysForRecentFiveYears(country);
+        deleteHolidaysInRange(country, start, end);
         return holidayRepository.saveAll(mapper.toHolidays(commands, country)).size();
     }
 
@@ -38,33 +37,16 @@ public class HolidaySyncService {
                 ));
     }
 
-    private void deleteHolidaysForRecentFiveYears(Country country) {
-        holidayRepository.deleteByCountryAndDateBetween(
-                country,
-                LocalDate.of(HolidaySyncRange.START_YEAR, 1, 1),
-                LocalDate.of(HolidaySyncRange.END_YEAR, 12, 31)
-        );
+    private int deleteHolidaysInRange(Country country, LocalDate start, LocalDate end) {
+        return holidayRepository.deleteInRange(country, start, end);
     }
 
     @Transactional
-    public void upsertOneYearHolidays(String countryCode, List<HolidayUpsertCommand> commands, int year) {
+    public int deleteOneYearHolidays(String countryCode, int year) {
         Country country = findCountry(countryCode);
-        deleteHolidaysForYear(country, year);
-        holidayRepository.saveAll(mapper.toHolidays(commands, country));
-    }
-
-    private int deleteHolidaysForYear(Country country, int year) {
-        return holidayRepository.deleteByCountryAndDateBetween(
-                country,
-                LocalDate.of(year, 1, 1),
-                LocalDate.of(year, 12, 31)
-        );
-    }
-
-    @Transactional
-    public int deleteOneYearHolidays(String countryCode, Integer year) {
-        Country country = findCountry(countryCode);
-        return deleteHolidaysForYear(country, year);
+        LocalDate start = LocalDate.of(year, 1, 1);
+        LocalDate end   = LocalDate.of(year, 12, 31);
+        return deleteHolidaysInRange(country, start, end);
     }
 
 }

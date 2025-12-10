@@ -13,8 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.company.holiday.holiday_service.api.domain.HolidaySyncRange.END_YEAR;
-import static com.company.holiday.holiday_service.api.domain.HolidaySyncRange.START_YEAR;
+import static com.company.holiday.holiday_service.api.domain.HolidayYearRangeCalculator.*;
 
 @Service
 @RequiredArgsConstructor
@@ -77,14 +76,14 @@ public class HolidayQueryService {
 
         // 3) 아무것도 없으면 최근 5년 전체
         return new DateRange(
-                LocalDate.of(START_YEAR, 1, 1),
-                LocalDate.of(END_YEAR, 12, 31)
+                LocalDate.of(lastFiveYears().fromYear(), 1, 1),
+                LocalDate.of(lastFiveYears().toYear(), 12, 31)
         );
     }
 
     private LocalDate filterStartDateRange(LocalDate from) {
         if (from == null) {
-            return LocalDate.of(START_YEAR, 1, 1);
+            return LocalDate.of(lastFiveYears().fromYear(), 1, 1);
         }
         Holiday.verifyYearInRecentFiveYears(from.getYear());
         return from;
@@ -92,7 +91,7 @@ public class HolidayQueryService {
 
     private LocalDate filterEndDateRange(LocalDate to) {
         if (to == null) {
-            return LocalDate.of(END_YEAR, 12, 31);
+            return LocalDate.of(lastFiveYears().toYear(), 12, 31);
         }
         Holiday.verifyYearInRecentFiveYears(to.getYear());
         return to;

@@ -95,9 +95,11 @@ class HolidayCommandServiceTest {
         given(mapper.toCommand(krHolidayDto)).willReturn(krHolidayCmd);
         given(mapper.toCommand(usHolidayDto)).willReturn(usHolidayCmd);
 
-        given(holidaySyncService.upsertRecentFiveYearsHolidays(eq("KR"), anyList()))
+        // upsertHolidaysInRange 가 실제로 저장한 공휴일 수를 리턴한다고 가정
+        // KR: 5건, US: 5건 → 합계 10건
+        given(holidaySyncService.upsertHolidaysInRange(eq("KR"), any(LocalDate.class), any(LocalDate.class), anyList()))
                 .willReturn(5);
-        given(holidaySyncService.upsertRecentFiveYearsHolidays(eq("US"), anyList()))
+        given(holidaySyncService.upsertHolidaysInRange(eq("US"), any(LocalDate.class), any(LocalDate.class), anyList()))
                 .willReturn(5);
 
         // when
@@ -109,13 +111,13 @@ class HolidayCommandServiceTest {
 
         // 2) 나라별로 최근 5년 공휴일을 한 번에 upsert한다. 국가 2개 → 2번 호출
         verify(holidaySyncService, times(2))
-                .upsertRecentFiveYearsHolidays(anyString(), anyList());
-        verify(holidaySyncService).upsertRecentFiveYearsHolidays(eq("KR"), anyList());
-        verify(holidaySyncService).upsertRecentFiveYearsHolidays(eq("US"), anyList());
+                .upsertHolidaysInRange(anyString(), any(LocalDate.class), any(LocalDate.class), anyList());
+        verify(holidaySyncService).upsertHolidaysInRange(eq("KR"), any(LocalDate.class), any(LocalDate.class), anyList());
+        verify(holidaySyncService).upsertHolidaysInRange(eq("US"), any(LocalDate.class), any(LocalDate.class), anyList());
 
-        // 3) 응답 값 검증 (국가 수 = 2, 공휴일 수 = 2개 국가 × 5년 × 연도당 1개)
+        // 3) 응답 값 검증 (국가 수 = 2, 공휴일 수 = upsertHolidaysInRange 리턴 합계)
         assertThat(response.countriesCount()).isEqualTo(2);
-        assertThat(response.holidaysCount()).isEqualTo(2 * 5 * 1);
+        assertThat(response.holidaysCount()).isEqualTo(10);
     }
 
     @DisplayName("가용 국가 조회에서 ExternalApiException이 발생하면 그대로 전파하고 이후 동기화는 수행하지 않는다")
@@ -203,6 +205,14 @@ class HolidayCommandServiceTest {
         given(mapper.toCommand(dto1)).willReturn(cmd1);
         given(mapper.toCommand(dto2)).willReturn(cmd2);
 
+        // 4) HolidaySyncService 가 실제로 2건을 저장했다고 가정
+        given(holidaySyncService.upsertHolidaysInRange(
+                eq(countryCode),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                anyList()
+        )).willReturn(2);
+
         // when
         HolidayRefreshResponse response = holidayCommandService.refreshHolidays(year, countryCode);
 
@@ -217,10 +227,15 @@ class HolidayCommandServiceTest {
         verify(mapper).toCommand(dto1);
         verify(mapper).toCommand(dto2);
 
-        // 4) 동기화 서비스 호출 (deduplicate 이후에도 두 개가 남아야 한다)
-        verify(holidaySyncService).upsertOneYearHolidays(countryCode, List.of(cmd1, cmd2), year);
+        // 4) 동기화 서비스 호출 (year 기준 [1월1일 ~ 12월31일] 범위로 upsert)
+        verify(holidaySyncService).upsertHolidaysInRange(
+                eq(countryCode),
+                eq(LocalDate.of(year, 1, 1)),
+                eq(LocalDate.of(year, 12, 31)),
+                eq(List.of(cmd1, cmd2))
+        );
 
-        // 5) 응답에 "원본 공휴일 개수"가 담긴다 (중복 제거 전 size 기준)
+        // 5) 응답에 "실제 upsert된 공휴일 개수"가 담긴다
         assertThat(response.holidaysCount()).isEqualTo(2);
     }
 
