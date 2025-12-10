@@ -4,6 +4,7 @@ import com.company.holiday.holiday_service.api.application.dto.CountryUpsertComm
 import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertCommand;
 import com.company.holiday.holiday_service.api.application.mapper.HolidayCommandMapper;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayDeleteResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
 import com.company.holiday.holiday_service.clients.nager.NagerClient;
@@ -125,7 +126,7 @@ class HolidayCommandServiceTest {
     void syncCountriesAndHolidays_throwExternalApiException_CountriesFetch() {
         // given
         given(nagerClient.getAvailableCountries())
-                .willThrow(new ExternalApiException(ErrorCode.EXTERNAL_API_ERROR));
+                .willThrow(new ExternalApiException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         // when & then
         assertThatThrownBy(() -> holidayCommandService.syncCountriesAndHolidays())
@@ -298,14 +299,14 @@ class HolidayCommandServiceTest {
                 .willReturn(7);
 
         // when
-        int result = holidayCommandService.deleteHolidays(year, countryCode);
+        HolidayDeleteResponse response = holidayCommandService.deleteHolidays(year, countryCode);
 
         // then
         // HolidaySyncService 가 올바른 파라미터로 호출되었는지
         verify(holidaySyncService).deleteOneYearHolidays(countryCode, year);
 
         // 반환값이 삭제 건수와 동일한지
-        assertThat(result).isEqualTo(7);
+        assertThat(response.holidaysCount()).isEqualTo(7);
     }
 
     @DisplayName("삭제 시 HolidaySyncService에서 EntityNotFoundException이 발생하면 그대로 전파된다")

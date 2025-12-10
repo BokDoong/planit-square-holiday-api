@@ -37,7 +37,7 @@ public class NagerRestClient implements NagerClient {
             return body == null ? List.of() : Arrays.asList(body);
         } catch (RestClientException e) {
             log.warn("Nager API 가용 국가 조회 실패: {}", e.getMessage(), e);
-            throw new ExternalApiException(ErrorCode.EXTERNAL_API_ERROR, "Nager API 가용 국가 조회 중 에러 발생", e);
+            throw new ExternalApiException(ErrorCode.INTERNAL_SERVER_ERROR, "Nager API 가용 국가 조회 중 에러 발생", e);
         }
     }
 
@@ -52,7 +52,7 @@ public class NagerRestClient implements NagerClient {
             return body == null ? List.of() : Arrays.asList(body);
         } catch (RestClientException e) {
             log.warn("Nager API 공휴일 조회 실패. countryCode={}, year={}, reason={}", countryCode, year, e.getMessage(), e);
-            throw new ExternalApiException(ErrorCode.EXTERNAL_API_ERROR, "Nager API 공휴일 조회 중 에러 발생", e);
+            throw new ExternalApiException(ErrorCode.INTERNAL_SERVER_ERROR, "Nager API 공휴일 조회 중 에러 발생", e);
         }
     }
 
