@@ -68,8 +68,8 @@ class HolidayQueryServiceTest {
                 pageable
         )).willReturn(holidayPage);
 
-        HolidaySearchResponse r1 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
-        HolidaySearchResponse r2 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r1 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r2 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
 
         given(holidayQueryMapper.toResponse(h1)).willReturn(r1);
         given(holidayQueryMapper.toResponse(h2)).willReturn(r2);
@@ -121,7 +121,7 @@ class HolidayQueryServiceTest {
                 pageable
         )).willReturn(holidayPage);
 
-        HolidaySearchResponse r1 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r1 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
         given(holidayQueryMapper.toResponse(h1)).willReturn(r1);
 
         // when
@@ -171,9 +171,9 @@ class HolidayQueryServiceTest {
                 pageable
         )).willReturn(holidayPage);
 
-        HolidaySearchResponse r1 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
-        HolidaySearchResponse r2 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
-        HolidaySearchResponse r3 = new HolidaySearchResponse(null, null, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r1 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r2 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
+        HolidaySearchResponse r3 = new HolidaySearchResponse(1L, null, null, null, false, false, null, List.of(), List.of());
 
         given(holidayQueryMapper.toResponse(h1)).willReturn(r1);
         given(holidayQueryMapper.toResponse(h2)).willReturn(r2);
@@ -225,7 +225,7 @@ class HolidayQueryServiceTest {
         )).willReturn(holidayPage);
 
         HolidaySearchResponse r1 = new HolidaySearchResponse(
-                null, null, null, null, null,
+                1L, null, null, null,
                 false, false, null,
                 List.of(), List.of()
         );

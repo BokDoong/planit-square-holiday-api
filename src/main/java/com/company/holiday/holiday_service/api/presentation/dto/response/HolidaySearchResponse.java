@@ -6,8 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record HolidaySearchResponse(
-        String countryCode,
-        String countryName,
+        Long id,
         LocalDate date,
         String localName,
         String name,

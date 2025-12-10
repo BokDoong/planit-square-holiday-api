@@ -1,7 +1,6 @@
 package com.company.holiday.holiday_service.api.application.mapper;
 
 import com.company.holiday.holiday_service.api.application.dto.HolidaySearchQuery;
-import com.company.holiday.holiday_service.api.domain.Country;
 import com.company.holiday.holiday_service.api.domain.Holiday;
 import com.company.holiday.holiday_service.api.presentation.dto.request.HolidaySearchRequest;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySearchResponse;
@@ -21,11 +20,9 @@ public class HolidayQueryMapper {
     }
 
     public HolidaySearchResponse toResponse(Holiday holiday) {
-        Country country = holiday.getCountry();
 
         return new HolidaySearchResponse(
-                country.getCode(),
-                country.getName(),
+                holiday.getId(),
                 holiday.getDate(),
                 holiday.getLocalName(),
                 holiday.getName(),
