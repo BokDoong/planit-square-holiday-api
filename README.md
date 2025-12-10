@@ -1,6 +1,6 @@
-## 개요
+## Holiday API
 
-### 프로젝스 설명
+### 프로젝트 개요
 
 이 서비스는 Nager Public Holidays API를 활용해 국가/연도별 공휴일 데이터를 적재·조회·삭제·재동기화하는 Holiday API입니다.
 
