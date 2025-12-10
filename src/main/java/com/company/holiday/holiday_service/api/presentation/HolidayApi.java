@@ -6,6 +6,7 @@ import com.company.holiday.holiday_service.api.application.mapper.HolidayQueryMa
 import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayDeleteRequest;
 import com.company.holiday.holiday_service.api.presentation.dto.request.HolidayRefreshRequest;
 import com.company.holiday.holiday_service.api.presentation.dto.request.HolidaySearchRequest;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayDeleteResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySearchResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
@@ -36,7 +37,7 @@ public class HolidayApi {
     }
 
     @DeleteMapping
-    public int deleteHolidays(@RequestBody @Valid HolidayDeleteRequest request) {
+    public HolidayDeleteResponse deleteHolidays(@RequestBody @Valid HolidayDeleteRequest request) {
         return holidayCommandService.deleteHolidays(request.getYear(), request.getCountryCode());
     }
 

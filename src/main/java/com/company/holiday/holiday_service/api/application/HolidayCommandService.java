@@ -5,6 +5,7 @@ import com.company.holiday.holiday_service.api.application.dto.HolidayUpsertComm
 import com.company.holiday.holiday_service.api.application.mapper.HolidayCommandMapper;
 import com.company.holiday.holiday_service.api.domain.Holiday;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
+import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayDeleteResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidayRefreshResponse;
 import com.company.holiday.holiday_service.api.presentation.dto.response.HolidaySyncResponse;
 import com.company.holiday.holiday_service.clients.nager.NagerClient;
@@ -130,9 +131,9 @@ public class HolidayCommandService {
     }
 
     // 특정 나라, 년도의 공휴일 삭제
-    public int deleteHolidays(int year, String countryCode) {
+    public HolidayDeleteResponse deleteHolidays(int year, String countryCode) {
         Holiday.verifyYearInRecentFiveYears(year);
-        return holidaySyncService.deleteOneYearHolidays(countryCode, year);
+        return new HolidayDeleteResponse(holidaySyncService.deleteOneYearHolidays(countryCode, year));
     }
 
     private void verifyCountryIsExist(String countryCode) {
