@@ -2,7 +2,7 @@ package com.company.holiday.holiday_service.api.application;
 
 import com.company.holiday.holiday_service.api.domain.Country;
 import com.company.holiday.holiday_service.api.infra.CountryRepository;
-import com.company.holiday.holiday_service.api.presentation.CountryResponse;
+import com.company.holiday.holiday_service.api.presentation.dto.response.CountrySearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class CountryQueryServiceTest {
 
     @DisplayName("전체 국가 목록을 코드 오름차순 기준으로 조회한다.")
     @Test
-    void findAllCountries_success() {
+    void searchAll() {
         // given
         Country kr = Country.of("KR", "대한민국");
         Country jp = Country.of("JP", "일본");
@@ -36,7 +36,7 @@ class CountryQueryServiceTest {
                 .willReturn(List.of(jp, kr, us));
 
         // when
-        List<CountryResponse> result = countryQueryService.findAllCountries();
+        List<CountrySearchResponse> result = countryQueryService.searchAll();
 
         // then
         assertThat(result).hasSize(3);
